@@ -77,7 +77,7 @@ function collisionAvoidance(possibleMoves, gameState) {
     return avoidSnakes(moves, gameState);
 }
 
-let lastDirectionMove = 'right';
+let lastDirectionMove: String = 'right';
 
 export function move(gameState) {
     let possibleMoves = {
@@ -130,6 +130,7 @@ function pickMove(gameState: GameState, safeMoves: String[]) {
     const response = {
         move
     }
+    lastDirectionMove = move;
 
     console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`)
     return response;
