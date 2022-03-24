@@ -36,14 +36,14 @@ export interface RulesetSettings {
 export interface Ruleset {
     name: string;
     version: string;
-    settings: RulesetSettings;
+    settings?: RulesetSettings;
 }
 
 export interface Game {
     id: string;
     ruleset: Ruleset;
     timeout: number;
-    source: string;
+    source?: string;
 }
 
 export interface Coord {
