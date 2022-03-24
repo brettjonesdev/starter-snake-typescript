@@ -24,6 +24,7 @@ function avoidWalls(possibleMoves, gameState) {
     const moves = {...possibleMoves}
     const boardWidth = gameState.board.width;
     const boardHeight = gameState.board.height;
+    console.log(`width: ${boardWidth}, height: ${boardHeight}`)
     const head = gameState.you.head
     console.log(head)
     // console.log(gameState.board)
@@ -31,10 +32,10 @@ function avoidWalls(possibleMoves, gameState) {
     if (boardWidth - 1 === head.x) {
         moves.right = false;
     }
-    if (head.x === 1) {
+    if (head.x === 0) {
         moves.left = false;
     }
-    if (head.y === 1) {
+    if (head.y === 0) {
         moves.down = false;
     }
     if (boardHeight - 1 === head.y) {
@@ -47,23 +48,27 @@ function avoidSnakes(possibleMoves, gameState) {
     const head = gameState.you.head
     const moves = {...possibleMoves}
     // console.log(gameState.board.snakes[0].body)
-    const snakeBody = gameState.board.snakes[0].body
-    const up = { x: head.x, y: head.y + 1 }
-    const down = { x: head.x, y: head.y - 1 }
-    const right = { x: head.x + 1, y: head.y }
-    const left = { x: head.x - 1, y: head.y }
-    if (snakeBody.some(c => c.x === up.x && c.y === up.y)) {
-        moves.up = false;
-    }
-    if (snakeBody.some(c => c.x === down.x && c.y === down.y)) {
-        moves.down = false;
-    }
-    if (snakeBody.some(c => c.x === left.x && c.y === left.y)) {
-        moves.left = false;
-    }
-    if (snakeBody.some(c => c.x === right.x && c.y === right.y)) {
-        moves.right = false;
-    }
+    const snakes = gameState.board.snakes;
+    snakes.forEach(snake => {
+        const snakeBody = snake.body
+        const up = { x: head.x, y: head.y + 1 }
+        const down = { x: head.x, y: head.y - 1 }
+        const right = { x: head.x + 1, y: head.y }
+        const left = { x: head.x - 1, y: head.y }
+        if (snakeBody.some(c => c.x === up.x && c.y === up.y)) {
+            moves.up = false;
+        }
+        if (snakeBody.some(c => c.x === down.x && c.y === down.y)) {
+            moves.down = false;
+        }
+        if (snakeBody.some(c => c.x === left.x && c.y === left.y)) {
+            moves.left = false;
+        }
+        if (snakeBody.some(c => c.x === right.x && c.y === right.y)) {
+            moves.right = false;
+        }
+    })
+
     return moves
 }
 
@@ -71,6 +76,8 @@ function collisionAvoidance(possibleMoves, gameState) {
     const moves = avoidWalls(possibleMoves, gameState)
     return avoidSnakes(moves, gameState);
 }
+
+let lastDirectionMove = 'right';
 
 export function move(gameState) {
     let possibleMoves = {
@@ -109,10 +116,21 @@ export function move(gameState) {
     // Finally, choose a move from the available safe moves.
     // TODO: Step 5 - Select a move to make based on strategy, rather than random.
     const safeMoves = Object.keys(possibleMoves).filter(key => possibleMoves[key])
+    return pickMove(gameState, safeMoves);
+}
+
+function pickMove(gameState: GameState, safeMoves: String[]) {
+    let move;
+    if (safeMoves.some((move) => move === lastDirectionMove)) {
+        move = lastDirectionMove;
+    } else {
+        move = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+    }
+
     const response = {
-        move: safeMoves[Math.floor(Math.random() * safeMoves.length)],
+        move
     }
 
     console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`)
-    return response
+    return response;
 }
